@@ -34,9 +34,45 @@ public class DemoTest : PageTest
     }
 
     [TestMethod]
+    public async Task GivenIAmOnHomePage()
+    {
+        await _page.GotoAsync("http://localhost:5000/");
+    }
+
+    [TestMethod]
+    public async Task GivenIAmLoggedInAsHuggo()
+    {
+        GivenIAmOnHomePage();
+        // Vänta tills sidan har laddats klart
+        await _page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
+
+        // Klicka på knappen "Logga in"
+        await _page.GetByRole(AriaRole.Button, new() { Name = "Login" }).ClickAsync();
+
+        // Vänta tills sidan har laddats klart
+        await _page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
+
+        // Fyll i användarnamn och lösenord
+        await _page.GetByLabel("Email").FillAsync("Hej@gmail.com");
+        await _page.GetByLabel("Password").FillAsync("abc123");
+
+        // Klicka på knappen "Logga in"
+        await _page.GetByRole(AriaRole.Button, new() { Name = "Submit" }).ClickAsync();
+
+        // Vänta tills sidan har laddats klart
+        await _page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
+
+        // Kontrollera att vi är inloggade
+        var loggedInText = await _page.GetByText("Welcome, Huggo").InnerTextAsync();
+        Assert.IsTrue(loggedInText.Contains("Welcome, Huggo"));
+    }
+
+    [TestMethod]
     public async Task GetShopLink()
     {
-        await _page.GotoAsync("http://localhost:3000/");
+        GivenIAmOnHomePage();
+        // Vänta tills sidan har laddats klart
+        await _page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
 
         // Klicka på länken till "Shop"
         await _page.GetByRole(AriaRole.Link, new() { Name = "Shop" }).ClickAsync();
