@@ -80,4 +80,4 @@ public class DemoTest : PageTest
         // Kontrollera att knappen "Electronics" finns på sidan
         await Expect(_page.GetByRole(AriaRole.Button, new() { Name = "Electronics" })).ToBeVisibleAsync();
     }
-}
+} //Hej
