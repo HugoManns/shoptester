@@ -1,9 +1,7 @@
 name: CI/CD Test
 on:
   push:
-    branches: [
-      "playwrite-tests"
-    ]
+    branches: ["main"]
       
 jobs:
 
@@ -32,4 +30,19 @@ jobs:
       - name: Run API-Tests
         run: newman run server/tests/api-tests.postman_collection.json -e server/tests/environment.json
 
-  
+    gui_test:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v4
+        - name: Set up dotnet
+          uses: actions/setup-dotnet@v4
+          with:
+            node-version: '8.0.x'
+        - name: Install dependencies
+          run: dotnet restore
+        - name: Build/ Restore Platweight Project
+          run: cd ShopTester.Tests && dotnet restore
+        - name: Ensure browsers are installed
+          run: pwsh bin/Debug/net8.0/playwright.ps1 install --with-deps
+        - name: Run your tests
+          run: dotnet test 
