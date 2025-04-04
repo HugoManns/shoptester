@@ -1,0 +1,35 @@
+name: CI/CD Test
+on:
+  push:
+    branches: [
+      "playwrite-tests"
+    ]
+      
+jobs:
+
+  api_test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: setup dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Install Newman
+        run: npm install -g newman
+      - name: install dotnet project dependencies
+        run: dotnet restore
+      - name: Build
+        run: dotnet build
+      - name: Start Server
+        run: cd server && nohup dotnet run &
+      - name: Run API-Tests
+        run: newman run server/tests/api-tests.postman_collection.json -e server/tests/environment.json
+
+  
